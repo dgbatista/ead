@@ -2,19 +2,30 @@
 namespace src\controllers;
 
 use \core\Controller;
+use \src\handlers\AlunosHandler;
 
 class HomeController extends Controller {
 
+    public function __construct(){
+
+        $alunos = AlunosHandler::isLogged();
+
+        if(!$alunos){
+            $this->redirect('/login');
+        }
+    }
+
     public function index() {
-        $this->render('home', ['nome' => 'Bonieky']);
-    }
+        $loggedAluno = array();
 
-    public function sobre() {
-        $this->render('sobre');
-    }
+        $loggedAluno = AlunosHandler::getAluno($_SESSION['lgaluno']);
 
-    public function sobreP($args) {
-        print_r($args);
+        $cursos = AlunosHandler::getCursosDoAluno($loggedAluno->id);
+
+        $this->render('home', [
+            'loggedAluno' => $loggedAluno,
+            'cursos' => $cursos
+        ]);
     }
 
 }
